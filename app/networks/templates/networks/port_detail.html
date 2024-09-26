@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<div class="container my-5">
+   <p class="text-end"> <a class="text-dark" href="{% url 'port-update' object.pk %}">Edit</a></p>
+    <p><strong>Port: </strong> {{object|upper}}</p>
+
+    <p> <strong>Switch: </strong>{{object.switch|upper}}</p>
+    <p> <strong>Network: </strong>{{object.network}}</p>
+    <p> <strong>Status: </strong>{{object.get_status_display|upper }}</p>
+    <p> <strong>vlan: </strong>{{object.vlan}}</p>
+    <hr>
+    <p> <strong>Note: </strong>{{object.note}}</p>
+    
+  
+        
+    <!-- {% for sw in object.switch_set.all %}
+   <p> <a href="{% url 'switch-detail' sw.pk %}">{{sw|upper}}</a></p>
+{% endfor %} -->
+</div>
+
+
+
+
+{% endblock content %}

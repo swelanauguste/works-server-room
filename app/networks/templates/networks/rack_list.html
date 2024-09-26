@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<div class="container my-5">
+  <p class="text-end"><a class="text-dark"
+      href="{% url 'port-create' %}">Add port </a></p>
+  <hr>
+  <div class="row">
+    {% for o in object_list %}
+    <div class="col-lg-6">
+      <h1 class="ms-3">{{o|upper}}</h1>
+      {% for sw in o.switches.all %}
+      <a class="text-dark text-decoration-none"
+        href="{% url 'switch-detail' sw.pk %}">
+      <div class="row border border-dark m-2 p-2 shadow rounded-4">
+        <p>{{sw|upper}}</p>
+        <hr>
+        <p>
+          {% for pt in sw.ports.all %}
+          <a title="{{pt.get_title}}"
+            class="btn btn-dark bg-dark mb-1"
+            href="{% url 'port-detail' pt.pk %}">{{pt|upper}}</a>
+          {% empty %}
+          <p class="text-center"><a class="text-dark" href="#">No ports</a></p>
+          {% endfor %}
+        </p>
+      </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock content %}

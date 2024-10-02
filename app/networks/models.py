@@ -1,82 +1,78 @@
+import uuid
+
 from django.db import models
 from django.urls import reverse
+from django.utils.text import slugify
 
 
 class Rack(models.Model):
     name = models.CharField(max_length=100)
 
     def __str__(self):
-        return f"rk-{self.name}"
+        return f"{self.name}"
 
 
 class Stack(models.Model):
     name = models.CharField(max_length=100)
 
     def __str__(self):
-        return f"st-{self.name}"
+        return f"{self.name}"
 
 
 class Switch(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, blank=True, null=True)
+    serial_number = models.CharField(max_length=100, blank=True, null=True)
+    slug = models.SlugField(max_length=100, unique=True, null=True, blank=True)
     stack = models.ForeignKey(
         Stack, on_delete=models.CASCADE, null=True, blank=True, related_name="switches"
     )
     rack = models.ForeignKey(
-        Rack, on_delete=models.CASCADE, null=True, related_name="switches"
+        Rack, on_delete=models.CASCADE, null=True, blank=True, related_name="racks"
     )
 
+    class Meta:
+        verbose_name_plural = "switches"
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(f"{self.name}-{self.serial_number}")
+        super(Switch, self).save(*args, **kwargs)
+
     def __str__(self):
-        return f"sw-{self.name} - {self.rack}"
+        return f"{self.name} {self.serial_number}"
 
 
-class Network(models.Model):
+class vLan(models.Model):
     name = models.CharField(max_length=100)
-    note = models.CharField(max_length=100, blank=True)
+    role = models.CharField(max_length=100, blank=True)
+
+    class Meta:
+        verbose_name_plural = "vlans"
+        verbose_name = "vlan"
+
+    def save(self, *args, **kwargs):
+        self.role = self.role.lower()
+        super(vLan, self).save(*args, **kwargs)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} ({self.role})"
 
 
 class Port(models.Model):
+    slug = models.SlugField(max_length=100, unique=True, null=True, blank=True)
     port = models.PositiveIntegerField(null=True)
-    stack = models.ForeignKey(Stack, on_delete=models.CASCADE, null=True, blank=True)
     switch = models.ForeignKey(
         Switch, on_delete=models.CASCADE, null=True, blank=True, related_name="ports"
     )
-    network = models.ForeignKey(
-        Network, on_delete=models.CASCADE, blank=True, null=True
-    )
-    status = models.CharField(
-        max_length=10,
-        choices=[
-            ("voice", "voice"),
-            ("data", "data"),
-            ("voice-data", "voice-data"),
-            ("down", "down"),
-            ("uplink", "uplink"),
-            ("DMZ", "DMZ"),
-            ("MGMT", "MGMT"),
-            ("WIFI", "WIFI"),
-            ("projects", "projects"),
-        ],
-        default="v-d",
-    )
-    vlan = models.CharField(max_length=10, blank=True)
+    vlan = models.ManyToManyField(vLan, blank=True, related_name="vlans")
     note = models.CharField(max_length=100, blank=True)
 
     class Meta:
         ordering = ["port"]
         unique_together = ["switch", "port"]
 
-    def get_title(self):
-        if self.network and self.vlan:
-            return f"{self.get_status_display()}-{self.network}-{self.vlan}"
-        if self.network:
-            return f"{self.get_status_display()}-{self.network}"
-        if self.vlan:
-            return f"{self.get_status_display()}-{self.vlan}"
-
-        return f"{self.get_status_display()}"
+    def save(self, *args, **kwargs):
+        self.slug = uuid.uuid4()
+        super(Port, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse("port-detail", kwargs={"pk": self.pk})

@@ -11,8 +11,6 @@
         <thead>
             <tr>
                 <th scope="col">Port</th>
-                <th scope="col">network</th>
-                <th scope="col">status</th>
                 <th scope="col">vlan</th>
                 <th scope="col">note</th>
             </tr>
@@ -22,19 +20,15 @@
 
             {% for port in object.ports.all %}
             <tr
-                class="{% if port.status == 'uplink' %} table-danger 
-                {% elif port.status == 'MGMT' %} table-danger 
-                {% elif port.status == 'voice-data' %} table-success
-                {% elif port.status == 'voice' %} table-secondary
-                {% elif port.status == 'data' %} table-info
-                {% elif port.status == 'WIFI' %} table-primary
-                {% elif port.status == 'DMZ' %} table-danger
-                {% elif port.status == 'projects' %} table-secondary
-                {% endif %}">
+                class="">
                 <td>{{port.port}}</td>
-                <td>{{port.network}}</td>
-                <td>{{port.status}}</td>
-                <td>{{port.vlan}}</td>
+                <td>
+                    <small>
+                        {% for vlan in port.vlan.all %}
+                        <span>{{vlan|join:'-'}}</span>
+                        {% endfor %}
+                    </small>
+                 </td>
                 <td>{{port.note}}</td>
             </tr>
             {% endfor %}

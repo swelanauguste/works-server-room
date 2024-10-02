@@ -8,9 +8,13 @@
     <p><strong>Port: </strong> {{object|upper}}</p>
 
     <p> <strong>Switch: </strong>{{object.switch|upper}}</p>
-    <p> <strong>Network: </strong>{{object.network}}</p>
-    <p> <strong>Status: </strong>{{object.get_status_display|upper }}</p>
-    <p> <strong>vlan: </strong>{{object.vlan}}</p>
+    <div class="small">
+   <strong>VLAN: </strong>
+      {% for vlan in object.vlan.all %}
+         <small>{{vlan}}-</small>
+      {% endfor %}
+         
+    </div>
     <hr>
     <p> <strong>Note: </strong>{{object.note}}</p>
     

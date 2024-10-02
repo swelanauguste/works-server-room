@@ -7,8 +7,8 @@ from .models import Port, Rack, Stack, Switch
 
 class RackListView(ListView):
     model = Rack
-    projects = Port.objects.filter(status__icontains="projects")
-    extra_context = {"projects": projects}
+    # projects = Port.objects.filter(status__icontains="projects")
+    # extra_context = {"projects": projects}
 
 
 class PortCreateView(CreateView):

@@ -6,7 +6,19 @@ from django.utils.text import slugify
 
 
 class Rack(models.Model):
+    COLOUR_CHOICES_LIST = (
+        ('primary', 'primary'),
+        ('secondary', 'secondary'),
+        ('danger', 'danger'),
+        ('info', 'info'),
+        ('success', 'success'),
+        ('warning', 'warning'),
+        ('light', 'light'),
+        ('dark', 'dark'),
+        ('white', 'white'),
+    )
     name = models.CharField(max_length=100)
+    colour = models.CharField(max_length=100, blank=True, null=True, choices=COLOUR_CHOICES_LIST)
 
     def __str__(self):
         return f"{self.name}"
@@ -14,6 +26,7 @@ class Rack(models.Model):
 
 class Stack(models.Model):
     name = models.CharField(max_length=100)
+    colour = models.CharField(max_length=100, blank=True, null=True, choices=Rack.COLOUR_CHOICES_LIST)
 
     def __str__(self):
         return f"{self.name}"
@@ -26,12 +39,16 @@ class Switch(models.Model):
     stack = models.ForeignKey(
         Stack, on_delete=models.CASCADE, null=True, blank=True, related_name="switches"
     )
+    number_in_stack = models.PositiveIntegerField(default=1)
+    
     rack = models.ForeignKey(
         Rack, on_delete=models.CASCADE, null=True, blank=True, related_name="racks"
     )
+    sort = models.IntegerField(null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "switches"
+        ordering = ["sort"]
 
     def save(self, *args, **kwargs):
         self.slug = slugify(f"{self.name}-{self.serial_number}")
@@ -54,7 +71,7 @@ class vLan(models.Model):
         super(vLan, self).save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.name} ({self.role})"
+        return f"{self.name} {self.role}"
 
 
 class Port(models.Model):
@@ -65,6 +82,7 @@ class Port(models.Model):
     )
     vlan = models.ManyToManyField(vLan, blank=True, related_name="vlans")
     note = models.CharField(max_length=100, blank=True)
+    is_critical = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["port"]

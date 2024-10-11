@@ -2,13 +2,13 @@ from django.shortcuts import render
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from .forms import PortForm
-from .models import Port, Rack, Stack, Switch
+from .models import Port, Rack, Stack, Switch, vLan
 
 
 class RackListView(ListView):
     model = Rack
-    # projects = Port.objects.filter(status__icontains="projects")
-    # extra_context = {"projects": projects}
+    vlans = vLan.objects.all()
+    extra_context = {"vlans": vlans}
 
 
 class PortCreateView(CreateView):
@@ -32,4 +32,3 @@ class SwitchDetail(DetailView):
 
 class PortDetail(DetailView):
     model = Port
-    

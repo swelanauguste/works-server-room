@@ -1,41 +1,70 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container my-5">
+<div class="container-fluid my-5">
   <p class="text-end"><a class="text-dark"
       href="{% url 'port-create' %}">Add port </a></p>
   <hr>
   <div class="row">
     {% for o in object_list %}
-    <div class="col-lg-6">
+    <div class="col-lg-5">
       <h1 class="ms-3">{{o|upper}}</h1>
       {% for sw in o.racks.all %}
       <a class="text-dark text-decoration-none"
         href="{% url 'switch-detail' sw.pk %}">
-        <div class="row border border-dark m-2 p-2 shadow rounded-4">
+        <div class="row border border-{{sw.stack.colour}} border-5 m-2 p-2 shadow rounded-4">
           <p>{{sw|upper}}
 
             {% if sw.stack %}
-           <span class="badge bg-info"> stack {{sw.stack|upper}}</span>
+            <span class="badge bg-info"> stack {{sw.stack|upper}} switch {{sw.number_in_stack}}</span>
             {% endif %}
 
           </p>
           <hr>
           <p>
             {% for pt in sw.ports.all %}
-            <a title="{{pt.vlan.all|join:'-'}}"
-              class="badge rounded-pill text-bg-warning mb-1"
+            <a title="{{pt.vlan.all|join:', '}}"
+              class="badge rounded-pill mb-1 text-bg-warning
+              {% for role in pt.vlan.all %}
+                {% if '200' in role.name %}bg-success{% endif %}
+                {% if '351' in role.name %} border-info border-3 border {% endif %}
+                {% if '307' in role.name %} text-light {% endif %}
+                {% if '77' in role.name %} text-bg-dark {% endif %}
+                {% if '418' in role.name %} text-white bg-primary {% endif %}
+                {% if pt.is_critical %}bg-danger{% endif %}
+              {% endfor %}
+              "
               href="{% url 'port-detail' pt.pk %}">{{pt.port|upper}}</a>
             {% empty %}
-          <p class="text-center"><a class="text-dark"
-              href="#">No ports</a></p>
+          <p class="text-center">No ports</p>
           {% endfor %}
           </p>
         </div>
       </a>
       {% endfor %}
     </div>
+
     {% endfor %}
+    <div class="col mx-3">
+      <h1>vLans</h1>
+      <table class="table">
+      <tbody>
+        {% for vlan in vlans %}
+        <tr class="
+        
+        {% if '200' in vlan.name %}table-success {% endif %}
+        {% if '77' in vlan.name %}table-dark{% endif %}
+        {% if '307' in vlan.name %}table-light text-white{% endif %}
+        {% if '351' in vlan.name %}table-info{% endif %}
+        {% if '418' in vlan.name %}table-primary{% endif %}
+        ">
+          <td>{{vlan.name}}</td>
+          <td>{{vlan.role|upper}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    </div>
   </div>
 </div>
 {% endblock content %}

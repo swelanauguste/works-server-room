@@ -19,16 +19,28 @@
 
 
             {% for port in object.ports.all %}
-            <tr
-                class="">
+            <tr class="
+            {% for vlan in port.vlan.all %}
+                {% if '200' in vlan.name %}table-warning{% endif %}
+                {% if '77' in vlan.name %}table-dark{% endif %}
+                {% if '307' in vlan.name %}table-light text-white{% endif %}
+                {% if '351' in vlan.name %}table-info{% endif %}
+                {% if '418' in vlan.name %}table-primary{% endif %}
+                {% if '414' in vlan.name %}table-info{% endif %}
+            {% endfor %}
+            {% if port.is_critical %}table-danger{% endif %}
+            ">
+
                 <td>{{port.port}}</td>
-                <td>
-                    <small>
-                        {% for vlan in port.vlan.all %}
-                        <span>{{vlan|join:'-'}}</span>
-                        {% endfor %}
-                    </small>
-                 </td>
+                <td class=""><a class="text-dark"
+                        href="{% url 'port-detail' port.pk %}">
+                        <small>
+                            {% for vlan in port.vlan.all %}
+                            <span>{{vlan|join:'-'}}</span>
+                            {% endfor %}
+                        </small>
+                    </a>
+                </td>
                 <td>{{port.note}}</td>
             </tr>
             {% endfor %}

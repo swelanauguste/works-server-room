@@ -11,3 +11,7 @@ class PortForm(forms.ModelForm):
     class Meta:
         model = Port
         fields = "__all__"
+        exclude = ["slug"]
+        widgets = {
+            "vlan": forms.CheckboxSelectMultiple(attrs={"type": "checkbox",}),
+        }

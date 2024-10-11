@@ -13,16 +13,16 @@
 
 python manage.py makemigrations
 python manage.py migrate
-# python manage.py createsuperuser --noinput
-# python manage.py collectstatic --noinput
-# python manage.py racks_stacks
-# python manage.py switches
-# python manage.py vlans
-# python manage.py aruba
-# python manage.py cisco
-# python manage.py avaya11
-# python manage.py avaya12
-# python manage.py avaya21
-# python manage.py avaya22
+python manage.py createsuperuser --noinput
+python manage.py collectstatic --noinput
+python manage.py racks_stacks
+python manage.py switches
+python manage.py vlans
+python manage.py aruba
+python manage.py cisco
+python manage.py avaya11
+python manage.py avaya12
+python manage.py avaya21
+python manage.py avaya22
 
 exec "$@"
